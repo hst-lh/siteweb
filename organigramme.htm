@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Organigramme HST</title>
+  <style>
+    body {
+      background-color: #0b1c48;
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 2rem;
+    }
+    .organigramme {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+    .level {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 2rem 0;
+      position: relative;
+    }
+    .poles-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 4rem;
+  gap: 2rem;
+}
+
+.left-poles,
+.right-poles {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+    .box {
+      background: #102c6b;
+      border: 2px solid #fff;
+      padding: 1rem;
+      border-radius: 10px;
+      margin: 0 1rem 1rem;
+      text-align: center;
+      cursor: pointer;
+      min-width: 150px;
+      position: relative;
+    }
+    .box img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 0.5rem;
+    }
+    .lines {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      height: 2rem;
+      width: 2px;
+      background: white;
+      transform: translateX(-50%);
+    }
+    .subdivision {
+      border: 2px dashed white;
+      padding: 1rem;
+      border-radius: 10px;
+      margin-top: 2rem;
+      width: 100%;
+    }
+    .subdivision h3 {
+      text-align: center;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+    }
+    .branche-bureau {
+      display: flex;
+      justify-content: center;
+      position: relative;
+      flex-wrap: wrap;
+    }
+    .branche-bureau::before {
+      content: '';
+      position: absolute;
+      top: -2rem;
+      left: 50%;
+      height: 2rem;
+      width: 2px;
+      background: white;
+      transform: translateX(-50%);
+    }
+    .detail-panel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 35%;
+      height: 100%;
+      background: white;
+      color: black;
+      box-shadow: -2px 0 10px rgba(0,0,0,0.3);
+      padding: 2rem;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      z-index: 1000;
+    }
+    .detail-panel.active {
+      transform: translateX(0);
+    }
+    .close-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: #c00;
+      color: white;
+      border: none;
+      padding: 0.5rem;
+      cursor: pointer;
+      border-radius: 50%;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="organigramme">
+    <div class="level">
+      <div class="box" onclick="showDetails('tangi')">
+        <img src="photos/tangi.jpg" alt="Tangi Le Goff">
+        <strong>Tangi Le Goff</strong><br>Président
+      </div>
+    </div>
+
+    <div class="branche-bureau">
+      <div class="box" onclick="showDetails('nicolas')">
+        <img src="photos/nicolas.jpg" alt="Nicolas Dufour">
+        <strong>Nicolas Dufour</strong><br>Vice-Président
+      </div>
+      <div class="box" onclick="showDetails('tristan')">
+        <img src="photos/tristan.jpg" alt="Tristan Lejeune">
+        <strong>Tristan Lejeune</strong><br>Vice-Président adjoint
+      </div>
+    </div>
+
+    <div class="poles-container">
+  <div class="left-poles">
+    <div class="subdivision">
+      <h3>Pôle Trésorerie</h3>
+      <div class="level">
+        <div class="box" onclick="showDetails('malo')">
+          <img src="photos/malo.jpg" alt="Malo Lajoux">
+          <strong>Malo Lajoux</strong><br>Trésorier
+        </div>
+        <div class="box" onclick="showDetails('brunile')">
+          <img src="photos/brunile.jpg" alt="Brunile Tollot">
+          <strong>Brunile Tollot</strong><br>Trésorière adjointe
+        </div>
+      </div>
+    </div>
+
+    <div class="subdivision">
+      <h3>Pôle Partenariats</h3>
+      <div class="level">
+        <div class="box" onclick="showDetails('heloise')">
+          <img src="photos/heloise.jpg" alt="Heloise Cam">
+          <strong>Heloise Cam</strong><br>Resp. Partenariats
+        </div>
+        <div class="box" onclick="showDetails('come')">
+          <img src="photos/come.jpg" alt="Côme Gaultier">
+          <strong>Côme Gaultier</strong><br>Resp. Partenariats
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="right-poles">
+    <div class="subdivision">
+      <h3>Pôle Secrétariat</h3>
+      <div class="level">
+        <div class="box" onclick="showDetails('thomas')">
+          <img src="photos/thomas.jpg" alt="Thomas Janitor">
+          <strong>Thomas Janitor</strong><br>Secrétaire
+        </div>
+        <div class="box" onclick="showDetails('cleo')">
+          <img src="photos/cleo.jpg" alt="Cléo Hadet">
+          <strong>Cléo Hadet</strong><br>Secrétaire adjointe
+        </div>
+      </div>
+    </div>
+
+    <div class="subdivision">
+      <h3>Pôle Communication</h3>
+      <div class="level">
+        <div class="box" onclick="showDetails('oriane')">
+          <img src="photos/oriane.jpg" alt="Oriane Guerin">
+          <strong>Oriane Guerin</strong><br>Resp. Pôle Com
+        </div>
+        <div class="box" onclick="showDetails('yann')">
+          <img src="yann.jpeg" alt="Yann Kerhervé">
+          <br><strong>Yann Kerhervé</strong><br>Resp. Communication
+        </div>
+        <div class="box" onclick="showDetails('louise')">
+          <img src="photos/louise.jpg" alt="Louise Le Fichou">
+          <strong>Louise Le Fichou</strong><br>Resp. Communication
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="subdivision">
+  <h3>Pôle Voile</h3>
+  <div class="level">
+    <div class="box" onclick="showDetails('marceau')">
+      <img src="photos/marceau.jpg" alt="Marceau Beauvieux">
+      <strong>Marceau Beauvieux</strong><br>Voile du jeudi
+    </div>
+    <div class="box" onclick="showDetails('gabin')">
+      <img src="photos/gabin.jpg" alt="Gabin Fouesnant">
+      <strong>Gabin Fouesnant</strong><br>Voile du jeudi
+    </div>
+    <div class="box" onclick="showDetails('titouan')">
+      <img src="photos/titouan.jpg" alt="Titouan Giantonni">
+      <strong>Titouan Giantonni</strong><br>Régates
+    </div>
+    <div class="box" onclick="showDetails('pierre')">
+      <img src="photos/pierre.jpg" alt="Pierre-Yves Gelly">
+      <strong>Pierre-Yves Gelly</strong><br>Régates
+    </div>
+    <div class="box" onclick="showDetails('matthieu')">
+      <img src="photos/matthieu.jpg" alt="Matthieu Mabire">
+      <strong>Matthieu Mabire</strong><br>Hydro’s Cup
+    </div>
+    <div class="box" onclick="showDetails('basile')">
+      <img src="photos/basile.jpg" alt="Basile Gaugler">
+      <strong>Basile Gaugler</strong><br>Hydro’s Cup
+    </div>
+  </div>
+</div>
+
+
+ <div class="detail-panel" id="detailPanel">
+  <button class="close-btn" onclick="closeDetails()">✕</button>
+  <h2 id="detailName"></h2>
+  <img id="image" src="" alt="photo" style="width: 50%">
+  <h4 id="detailRole"></h4>
+  <p id="detailBio"></p>
+  <p>📧 Email : <a href="#" id="detailEmail"></a></p>
+  <p>🔗 Réseaux : <a href="#" id="detailLinkedin" target="_blank">Profil LinkedIn</a></p>
+</div>
+
+<script>
+  const profiles = {
+    tangi: {
+      name: "Tangi Le Goff",
+      image: "tangi.jpg",
+      role: "Président",
+      bio: "Bio à compléter.",
+      email: "tangi.le-goff@supmaritime.fr",
+      linkedin: "#"
+    },
+    nicolas: {
+      name: "Nicolas Dufour",
+      image: "nicolas.jpg",
+      role: "Vice-Président",
+      bio: "Bio à compléter.",
+      email: "nicolas.dufour@supmaritime.fr",
+      linkedin: "#"
+    },
+    yann: {
+      name: "Yann Kerhervé",
+      image: "yann.jpeg",
+      role: "Responsable communication",
+      bio: "Passionné par la mer, la technique et l’image, Yann est élève officier à l’École Nationale Supérieure Maritime et responsable communication de l’Hydro Sailing Team. Fort d’une expérience dans les projets associatifs (voile, drones, plugins météo), il met ses compétences en graphisme, web et rédaction au service de la visibilité de l’équipe. À terre comme en mer, il aime fédérer et raconter des histoires. Et toujours avec style.",
+      email: "yann.kerherve@supmaritime.fr",
+      linkedin: "https://www.linkedin.com/in/yann-kerherv%C3%A9/"
+    },
+    // ajoute les autres ici...
+  };
+
+  function showDetails(key) {
+    const p = profiles[key];
+    document.getElementById('detailName').textContent = p.name;
+    document.getElementById('image').src = p.image;
+    document.getElementById('detailRole').textContent = p.role;
+    document.getElementById('detailBio').textContent = p.bio;
+    document.getElementById('detailEmail').textContent = p.email;
+    document.getElementById('detailEmail').href = `mailto:${p.email}`;
+    document.getElementById('detailLinkedin').href = p.linkedin;
+    document.getElementById('detailPanel').classList.add('active');
+  }
+
+  function closeDetails() {
+    document.getElementById('detailPanel').classList.remove('active');
+  }
+</script>
+
+</body>
+</html>
