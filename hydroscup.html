@@ -88,216 +88,58 @@
 
 <center><h1>Les années précédentes :</h1></center>
 
-<style>
-  .slider-container {
-    position: relative;
-    width: 90%;
-    max-width: 1000px;
-    margin: 2rem auto;
-    overflow: hidden;
-    border-radius: 16px;
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
-  }
 
-  .slide {
+<div style="padding: 1rem; background: #f5f5f5;">
+  <div style="
     display: flex;
-    transition: transform 0.6s ease;
-    width: 100%;
-  }
-
-  .slide-item {
-    position: relative;
-    width: 100%;
-    flex-shrink: 0;
-    height: 550px;
-    background-size: cover;
-    background-position: center;
-  }
-
-  .overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(11, 28, 72, 0.85);
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    align-items: center;
-    color: white;
-    padding: 2rem;
-    text-align: left;
-  }
-
-  .slide-item:hover .overlay {
-    opacity: 1;
-  }
-
-  .info-block {
-    flex: 1;
-    max-width: 50%;
-  }
-
-  .info-block h3 {
-    font-size: 2.2rem;
-    margin-bottom: 0.5rem;
-    color: white;
-  }
-
-  .info-block p {
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
-  }
-
-  .podium {
-    display: flex;
-    justify-content: flex-start;
-    align-items: flex-end;
-    gap: 1rem;
-    margin-top: 1rem;
-  }
-
-  .podium div {
-    width: 150px;
-    background-color: white;
-    color: #0b1c48;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    align-items: center;
-    border-radius: 8px 8px 0 0;
-    font-weight: bold;
-    font-size: 0.85rem;
-    padding: 0.4rem;
-    text-align: center;
-  }
-
-  .first { height: 120px; }
-  .second { height: 90px; }
-  .third { height: 70px; }
-
-  .affiche {
-    flex: 0 0 250px;
-    max-height: 350px;
-    margin-left: 2rem;
-  }
-
-  .affiche img {
-    width: 100%;
-    height: auto;
-    border-radius: 8px;
-    box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
-  }
-
-  .nav-button {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: #0b1c48;
-    border: none;
-    color: white;
-    font-size: 2rem;
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-    border-radius: 8px;
-    z-index: 2;
-  }
-
-  .nav-left { left: 10px; }
-  .nav-right { right: 10px; }
-
-  @media (max-width: 800px) {
-    .overlay {
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-    }
-    .info-block, .affiche {
-      max-width: 100%;
-    }
-    .affiche {
-      margin-left: 0;
-      margin-top: 1rem;
-    }
-    .podium {
-      justify-content: center;
-    }
-  }
-</style>
-
-<div class="slider-container">
-  <button class="nav-button nav-left" onclick="slide(-1)">‹</button>
-  <div class="slide" id="slider">
-    <!-- Slide 1 -->
-<div class="slide-item" style="background-image: url('hc.jpg');">
-  <div class="overlay" style="display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 2em; padding: 2em;">
-
-    <div class="affiche">
-      <img src="hc25.jpg" alt="Affiche Hydro’s Cup 2025" style="max-width: 200px; height: auto; border-radius: 8px;">
+    overflow-x: auto;
+    gap: 2rem;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 1rem;
+  ">
+    <div style="flex: 0 0 auto; width: 160px; text-align: center; scroll-snap-align: start;">
+      <img src="hc25.jpg" alt="Hydro’s Cup 2025" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.2s ease;">
+      <p style="margin-top: 0.5rem; font-weight: bold; color: #0b1c48;">2025</p>
     </div>
-
-    <div class="info-block" style="color: white; text-align: left;">
-      <h3 style="margin: 0 0 0.5em 0;">Hydro’s Cup 2025</h3>
-      <p style="margin: 0 0 1em 0;">Une édition ensoleillée où XXXXXX a brillé !</p>
-      <div class="podium" style="display: flex; gap: 1em;">
-        <div class="second" style="text-align: center;">Cézembre<br><small>2ᵉ</small></div>
-        <div class="first" style="text-align: center;">Sapajou<br><small>1ᵉʳ</small></div>
-        <div class="third" style="text-align: center;">Glace à bord<br><small>3ᵉ</small></div>
-      </div>
+    <div style="flex: 0 0 auto; width: 160px; text-align: center; scroll-snap-align: start;">
+      <img src="hc24.jpg" alt="Hydro’s Cup 2024" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.2s ease;">
+      <p style="margin-top: 0.5rem; font-weight: bold; color: #0b1c48;">2024</p>
     </div>
-
+    <div style="flex: 0 0 auto; width: 160px; text-align: center; scroll-snap-align: start;">
+      <img src="hc23.jpg" alt="Hydro’s Cup 2023" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.2s ease;">
+      <p style="margin-top: 0.5rem; font-weight: bold; color: #0b1c48;">2023</p>
+    </div>
+    <div style="flex: 0 0 auto; width: 160px; text-align: center; scroll-snap-align: start;">
+      <img src="hc22.jpg" alt="Hydro’s Cup 2022" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.2s ease;">
+      <p style="margin-top: 0.5rem; font-weight: bold; color: #0b1c48;">2022</p>
+    </div>
+    <div style="flex: 0 0 auto; width: 160px; text-align: center; scroll-snap-align: start;">
+      <img src="hc21.jpg" alt="Hydro’s Cup 2021" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.2s ease;">
+      <p style="margin-top: 0.5rem; font-weight: bold; color: #0b1c48;">2021</p>
+    </div>
+    <div style="flex: 0 0 auto; width: 160px; text-align: center; scroll-snap-align: start;">
+      <img src="hc20.jpg" alt="Hydro’s Cup 2020" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.2s ease;">
+      <p style="margin-top: 0.5rem; font-weight: bold; color: #0b1c48;">2020</p>
+    </div>
+    <div style="flex: 0 0 auto; width: 160px; text-align: center; scroll-snap-align: start;">
+      <img src="hc18.jpg" alt="Hydro’s Cup 2018" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.2s ease;">
+      <p style="margin-top: 0.5rem; font-weight: bold; color: #0b1c48;">2018</p>
+    </div>
+    <div style="flex: 0 0 auto; width: 160px; text-align: center; scroll-snap-align: start;">
+      <img src="hc17.jpg" alt="Hydro’s Cup 2017" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.2s ease;">
+      <p style="margin-top: 0.5rem; font-weight: bold; color: #0b1c48;">2017</p>
+    </div>
+    <div style="flex: 0 0 auto; width: 160px; text-align: center; scroll-snap-align: start;">
+      <img src="hc12.jpg" alt="Hydro’s Cup 2012" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.2s ease;">
+      <p style="margin-top: 0.5rem; font-weight: bold; color: #0b1c48;">2012</p>
+    </div>
   </div>
 </div>
 
-    <!-- Slide 2 -->
-    <div class="slide-item" style="background-image: url('https://example.com/photo2.jpg');">
-      <div class="overlay">
-        <div class="info-block">
-          <h3>Hydro’s Cup 2024</h3>
-          <p>L’édition stratégique avec du vent et des surprises !</p>
-          <div class="podium">
-            <div class="second">Team ENSM<br><small>2ᵉ</small></div>
-            <div class="first">Mar'Sailers<br><small>1ᵉʳ</small></div>
-            <div class="third">Vélocéa<br><small>3ᵉ</small></div>
-          </div>
-        </div>
-        <div class="affiche">
-          <img src="https://example.com/affiche2024.jpg" alt="Affiche Hydro’s Cup 2024">
-        </div>
-      </div>
-    </div>
 
-    <!-- Slide 3 -->
-    <div class="slide-item" style="background-image: url('https://example.com/photo3.jpg');">
-      <div class="overlay">
-        <div class="info-block">
-          <h3>Hydro’s Cup 2023</h3>
-          <p>Une édition record, une équipe d’exception !</p>
-          <div class="podium">
-            <div class="second">Groupe V<br><small>2ᵉ</small></div>
-            <div class="first">Hydromarsail<br><small>1ᵉʳ</small></div>
-            <div class="third">Les Avirons<br><small>3ᵉ</small></div>
-          </div>
-        </div>
-        <div class="affiche">
-          <img src="https://example.com/affiche2025.jpg" alt="Affiche Hydro’s Cup 2025">
-        </div>
-      </div>
-    </div>
-  </div>
-  <button class="nav-button nav-right" onclick="slide(1)">›</button>
-</div>
 
-<script>
-  let index = 0;
-  function slide(direction) {
-    const slider = document.getElementById("slider");
-    const totalSlides = slider.children.length;
-    index = (index + direction + totalSlides) % totalSlides;
-    slider.style.transform = `translateX(-${index * 100}%)`;
-  }
-</script>
 
+  
 
 <center><h1>Quelques statistiques...</h1></center>
 
@@ -455,3 +297,4 @@
 
 </body>
 </html>
+
