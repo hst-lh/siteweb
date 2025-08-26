@@ -24,6 +24,11 @@
         <li><a href="devenirpartenaire.html">Devenir partenaire</a></li>
         <li><a href="contact.html">Contact</a></li>
       </ul>
+            <div class="burger" onclick="toggleMenu()">
+          <div></div>
+          <div></div>
+          <div></div>
+      </div>
     </nav>
   </header>
 
@@ -113,6 +118,11 @@
 
     <p class="footer-bottom" style="text-align:center; margin-top: 2rem;">© Hydrosailing Team 2025–2026 — Tous droits réservés</p>
   </footer>
-
+<script>
+  function toggleMenu() {
+    document.querySelector(".nav-links").classList.toggle("active");
+  }
+</script>
 </body>
 </html>
+
