@@ -34,6 +34,7 @@ body {
   display: flex;
   gap: 1.5rem;
   list-style: none;
+
 }
 
 .nav-links a {
@@ -44,6 +45,46 @@ body {
 
 .nav-links a:hover {
   color: #00aaff;
+}
+
+
+
+/* Burger caché par défaut */
+.burger {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.burger div {
+  width: 25px;
+  height: 3px;
+  background: white;
+  margin: 4px;
+  transition: 0.3s;
+}
+
+/* Responsive : quand écran < 768px */
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    background: #0b1c48;
+    position: absolute;
+    top: 70px; /* juste sous le header */
+    left: 0;
+    width: 100%;
+    text-align: center;
+    padding: 1rem 0;
+  }
+
+  .nav-links.active {
+    display: flex;
+  }
+
+  .burger {
+    display: flex;
+  }
 }
 
 /* Hero Section */
@@ -214,3 +255,4 @@ footer {
   margin-top: 2rem;
   font-size: 0.9rem;
 }
+
