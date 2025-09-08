@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Questionnaire d'Inscription</title>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; }
+        .green-box { border: 2px solid green; padding: 15px; margin-top: 20px; border-radius: 8px; }
+        .black-box { border: 2px solid black; padding: 15px; margin-top: 20px; background-color: #f0f0f0; border-radius: 8px; }
+        .hidden { display: none; }
+        input[type="text"], input[type="email"], input[type="tel"], input[type="date"] { width: 100%; padding: 8px; margin-top: 5px; }
+        button { padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <h1>Formulaire d'Inscription</h1>
+
+    <div class="black-box">
+        <p><strong>Nom de la sortie :</strong> Régate du jeudi soir</p>
+        <p><strong>Type de licence requise :</strong> Compétition</p>
+    </div>
+
+    <form id="inscriptionForm">
+        <div id="step1" class="green-box">
+            <p><strong>Étape 1 : Identité</strong></p>
+            <p>Veuillez entrer votre nom et prénom.</p>
+            <label for="firstName">Prénom :</label>
+            <input type="text" id="firstName" name="firstName" required>
+            <label for="lastName">Nom :</label>
+            <input type="text" id="lastName" name="lastName" required>
+            <button type="button" onclick="checkDatabase()">Vérifier ma présence dans la base de données</button>
+        </div>
+
+        <div id="step2" class="green-box hidden">
+            <p><strong>Étape 2 : Statut de la base de données</strong></p>
+            <div id="foundInDB" class="hidden">
+                <p>Nous vous avons trouvé dans la base de données ! Souhaitez-vous modifier vos informations ?</p>
+                <label><input type="radio" name="modifyData" value="yes" onchange="toggleModifySection(true)"> Oui</label>
+                <label><input type="radio" name="modifyData" value="no" onchange="toggleModifySection(false)"> Non</label>
+            </div>
+            <div id="notFoundInDB" class="hidden">
+                <p>Nous ne vous avons pas trouvé dans la base de données. Acceptez-vous que vos données soient traitées informatiquement par HST ?</p>
+                <label><input type="radio" name="dataProcessing" value="yes" onchange="handleDataProcessing()"> Oui</label>
+                <label><input type="radio" name="dataProcessing" value="no" onchange="alert('Veuillez nous contacter pour une inscription papier.')"> Non</label>
+            </div>
+        </div>
+
+        <div id="step3" class="green-box hidden">
+            <p><strong>Étape 3 : Modification des Informations</strong></p>
+            <p>Veuillez mettre à jour vos informations si nécessaire.</p>
+            <label for="phone">Numéro de téléphone :</label>
+            <input type="tel" id="phone" name="phone">
+            <label for="email">Adresse e-mail :</label>
+            <input type="email" id="email" name="email">
+            <label for="dob">Date de naissance :</label>
+            <input type="date" id="dob" name="dob">
+            <label for="licenseNumber">Numéro de licence :</label>
+            <input type="text" id="licenseNumber" name="licenseNumber">
+            <label for="licenseType">Type de licence :</label>
+            <input type="text" id="licenseType" name="licenseType">
+            <button type="button" onclick="checkFFVLicense()">Passer à l'étape suivante</button>
+        </div>
+
+        <div id="step4" class="green-box hidden">
+            <p><strong>Étape 4 : Adhésion HST</strong></p>
+            <p>Êtes-vous adhérent HST ?</p>
+            <label><input type="radio" name="hstMember" value="yes" onchange="handleHstMember()"> Oui</label>
+            <label><input type="radio" name="hstMember" value="no" onchange="handleHstMember()"> Non</label>
+        </div>
+
+        <div id="step5" class="green-box hidden">
+            <p><strong>Étape 5 : Licence FFV</strong></p>
+            <div id="hstYes" class="hidden">
+                <p>Contactez Yann à <a href="mailto:yann.kerherve@supmaritime.fr">yann.kerherve@supmaritime.fr</a>, vous devriez déjà être dans la base de données.</p>
+            </div>
+            <div id="hstNo" class="hidden">
+                <p>Une adhésion de <strong>1 €</strong> sera ajoutée à votre total.</p>
+            </div>
+            <p>Avez-vous une licence FFV ?</p>
+            <label><input type="radio" name="ffvLicense" value="yes" onchange="handleFfvLicense()"> Oui</label>
+            <label><input type="radio" name="ffvLicense" value="no" onchange="handleFfvLicense()"> Non</label>
+        </div>
+
+        <div id="step6" class="green-box hidden">
+            <p><strong>Étape 6 : Détails de la licence</strong></p>
+            <p>Veuillez entrer vos informations de licence FFV.</p>
+            <label for="licenseNumber">Numéro de licence :</label>
+            <input type="text" id="licenseNumber" name="licenseNumber">
+            <label for="licenseType">Type de licence (passeport voile, journalière, compétition) :</label>
+            <input type="text" id="licenseType" name="licenseType">
+            <button type="button" onclick="checkLicenseType()">Vérifier la licence</button>
+        </div>
+
+        <div id="step7" class="green-box hidden">
+            <p><strong>Étape 7 : Achat de licence</strong></p>
+            <p id="licenseMismatchMessage" class="hidden">Votre licence ne correspond pas à la licence requise pour cette sortie.</p>
+            <p id="buyLicenseMessage" class="hidden">Veuillez choisir un type de licence à acheter (70 €).</p>
+            <ul>
+                <li id="passeportOption" class="hidden"><input type="radio" name="buyLicense" value="passeport"> Acheter un passeport voile (pas de compétition)</li>
+                <li><input type="radio" name="buyLicense" value="journaliere"> Acheter une licence journalière</li>
+                <li><input type="radio" name="buyLicense" value="competition"> Acheter une licence compétition</li>
+            </ul>
+            <button type="button" onclick="showSurvey()">Continuer</button>
+        </div>
+
+        <div id="step8" class="green-box hidden">
+            <p><strong>Étape 8 : Sondage</strong></p>
+            <label for="seanceType">Quel type de séance souhaitez-vous ?</label>
+            <input type="text" id="seanceType" name="seanceType">
+            <button type="button" onclick="showFinalDetails()">Valider le sondage</button>
+        </div>
+
+        <div id="step9" class="green-box hidden">
+            <p><strong>Étape 9 : Paiement</strong></p>
+            <p>Ajout de **<span id="seanceCost">15 €</span>** au total pour le coût de la séance.</p>
+            <p>Veuillez procéder au paiement.</p>
+            <p><strong>Total à payer : <span id="totalCost">0 €</span></strong></p>
+            <button type="submit">Paiement via l'API HelloAsso</button>
+        </div>
+    </form>
+
+    <script>
+        // Remplacer l'URL ci-dessous par l'URL du déploiement de votre script Google Apps
+        const appScriptUrl = 'https://script.google.com/macros/s/AKfycbzT4SLXqpiRq1JR3mF5HuKb6WqD6AnJc4J0S7S3GL0-lr2q0Uhqgxv97yxgCxeRp59b/exec';
+        const prixSeance = 15;
+        const prixAdhesion = 1;
+        const prixLicence = 70;
+        const typeSeanceRequis = 'compétition';
+
+        let totalCost = 0;
+
+        function toggleSection(id, show) {
+            document.getElementById(id).classList.toggle('hidden', !show);
+        }
+
+        async function checkDatabase() {
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+
+            if (firstName === '' || lastName === '') {
+                alert("Veuillez entrer votre nom et prénom.");
+                return;
+            }
+
+            try {
+                const response = await fetch(appScriptUrl, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'checkDatabase', firstName: firstName, lastName: lastName })
+                });
+                const result = await response.json();
+
+                toggleSection('step2', true);
+                if (result.found) {
+                    toggleSection('foundInDB', true);
+                    toggleSection('notFoundInDB', false);
+                    // Remplir les champs avec les données trouvées
+                    if (result.userData) {
+                        document.getElementById('email').value = result.userData.email || '';
+                        document.getElementById('phone').value = result.userData.phone || '';
+                        document.getElementById('dob').value = result.userData.dob || '';
+                        document.getElementById('licenseNumber').value = result.userData.licenseNumber || '';
+                        document.getElementById('licenseType').value = result.userData.licenseType || '';
+                    }
+                } else {
+                    toggleSection('foundInDB', false);
+                    toggleSection('notFoundInDB', true);
+                }
+            } catch (error) {
+                console.error("Erreur lors de la vérification de la base de données :", error);
+                alert("Erreur de connexion à la base de données. Veuillez réessayer plus tard.");
+            }
+        }
+
+        function toggleModifySection(isModifying) {
+            if (isModifying) {
+                toggleSection('step3', true);
+            } else {
+                toggleSection('step3', false);
+                toggleSection('step5', true);
+            }
+        }
+
+        function handleDataProcessing() {
+            const accepted = document.querySelector('input[name="dataProcessing"]:checked').value;
+            if (accepted === 'yes') {
+                toggleSection('step4', true);
+            }
+        }
+
+        function handleHstMember() {
+            const isHstMember = document.querySelector('input[name="hstMember"]:checked').value;
+            toggleSection('step5', true);
+            if (isHstMember === 'yes') {
+                toggleSection('hstYes', true);
+                toggleSection('hstNo', false);
+            } else {
+                totalCost += prixAdhesion;
+                document.getElementById('totalCost').textContent = totalCost + ' €';
+                toggleSection('hstYes', false);
+                toggleSection('hstNo', true);
+            }
+        }
+
+        function checkFFVLicense() {
+            toggleSection('step5', true);
+        }
+
+        function handleFfvLicense() {
+            const hasFfvLicense = document.querySelector('input[name="ffvLicense"]:checked').value;
+            if (hasFfvLicense === 'yes') {
+                toggleSection('step6', true);
+            } else {
+                showLicenseOptions(false);
+            }
+        }
+
+        function checkLicenseType() {
+            const userLicenseType = document.getElementById('licenseType').value.toLowerCase();
+
+            if (userLicenseType === typeSeanceRequis) {
+                showSurvey();
+            } else {
+                totalCost += prixLicence;
+                document.getElementById('totalCost').textContent = totalCost + ' €';
+                toggleSection('step7', true);
+                toggleSection('licenseMismatchMessage', true);
+                toggleSection('buyLicenseMessage', true);
+                showLicenseOptions(false);
+            }
+        }
+
+        function showLicenseOptions(hasFFV) {
+            toggleSection('step7', true);
+            document.getElementById('buyLicenseMessage').classList.remove('hidden');
+
+            if (typeSeanceRequis === 'compétition') {
+                toggleSection('passeportOption', false);
+            } else {
+                toggleSection('passeportOption', true);
+            }
+        }
+
+        function showSurvey() {
+            toggleSection('step8', true);
+        }
+
+        function showFinalDetails() {
+            totalCost += prixSeance;
+            document.getElementById('totalCost').textContent = totalCost + ' €';
+            toggleSection('step9', true);
+        }
+    </script>
+</body>
+</html>
