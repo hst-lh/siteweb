@@ -1,259 +1,476 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Questionnaire d'Inscription</title>
-    <style>
-        body { font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; }
-        .green-box { border: 2px solid green; padding: 15px; margin-top: 20px; border-radius: 8px; }
-        .black-box { border: 2px solid black; padding: 15px; margin-top: 20px; background-color: #f0f0f0; border-radius: 8px; }
-        .hidden { display: none; }
-        input[type="text"], input[type="email"], input[type="tel"], input[type="date"] { width: 100%; padding: 8px; margin-top: 5px; }
-        button { padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px; }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HST – Inscription Séance</title>
+<style>
+:root {
+--blue: #0b1c48;
+--green: #1db954;
+--muted: #f5f7fb;
+--border: #dce1eb;
+}
+body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background: #fff; color: #111; margin: 0; }
+.container { max-width: 860px; margin: 0 auto; padding: 24px; }
+h1 { color: var(--blue); margin: 8px 0 6px; }
+.subtitle { color: #5b6b88; margin: 0 0 24px; }
+
+
+.grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+
+
+.card {
+border: 1px solid var(--border); background: #fff; border-radius: 16px; padding: 16px 16px 12px;
+box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+.card header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.card h2 { font-size: 18px; margin: 0; color: var(--blue); }
+.step-status { font-size: 12px; padding: 4px 8px; border-radius: 999px; background: var(--muted); color: #556; border: 1px solid var(--border); }
+.step-status.done { background: #e8fff1; color: #0a7a3f; border-color: #c6f0d5; }
+.step-status.warn { background: #fff5e6; color: #b35600; border-color: #ffe1b5; }
+
+
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+label { font-size: 13px; color: #334; display: block; margin-bottom: 6px; }
+input, select { width: 100%; border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; font-size: 14px; background: #fff; }
+.hint { font-size: 12px; color: #556; margin-top: 4px; }
+
+
+.actions { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+button { appearance: none; border: 1px solid var(--blue); background: var(--blue); color: #fff; padding: 10px 14px; border-radius: 10px; cursor: pointer; font-weight: 600; }
+button.secondary { background: #fff; color: var(--blue); }
+button:disabled { opacity: .6; cursor: not-allowed; }
+
+
+.muted { color: #667; }
+.divider { height: 1px; background: var(--border); margin: 12px 0; }
+
+
+.sticky-total { position: sticky; top: 0; z-index: 2; background: #fff; padding: 8px 0 16px; border-bottom: 1px solid var(--border); margin-bottom: 8px; }
+.total-line { display: flex; align-items: center; justify-content: space-between; font-weight: 700; font-size: 18px; }
+.total-badge { font-size: 12px; padding: 4px 8px; border-radius: 999px; background: #eef2ff; color: var(--blue); border: 1px solid #c8d2ff; }
+
+
+.note { background: var(--muted); border: 1px dashed var(--border); padding: 10px 12px; border-radius: 12px; font-size: 13px; }
+</style>
 </head>
 <body>
+<div class="container">
+<div class="sticky-total">
+<div class="total-line">
+<div>
+<h1>Inscription à la séance</h1>
+<p class="subtitle">HydroSailing Team • Séance : <span id="sessionName">Régate du jeudi soir</span> • Licence requise : <strong id="requiredType">compétition</strong></p>
+</div>
+<div class="total-badge">Total actuel : <span id="totalAmount">0 €</span></div>
+</div>
+</div>
 
-    <h1>Formulaire d'Inscription</h1>
-    <div class="black-box">
-        <p><strong>Nom de la sortie :</strong> Régate du jeudi soir</p>
-        <p><strong>Type de licence requise :</strong> Compétition</p>
+
+<div class="grid">
+</div>
+<script>
+/* =========================
+   CONFIGURATION
+========================= */
+const APP_URL = 'https://script.google.com/macros/s/AKfycbx3RcVvXsPXibcY6G9XMmOgsycAzwO_5qe3HKujmGQYGJSdeMQsguyue1WzoKE7OoVt/exec'; // <-- remplace par ton URL /exec
+const SESSION_NAME = 'Régate du jeudi soir';
+const REQUIRED_TYPE = 'competition'; // 'competition' ou 'non-competition'
+const PRICE_ADHESION = 1;
+const PRICE_LICENSE = 70;   // même prix pour tous les types pour l’instant
+const PRICE_SEANCE  = 15;
+
+/* =========================
+   STATE GLOBAL
+========================= */
+const state = {
+  foundInDb: false,
+  consentGiven: false,
+  isMember: null,
+  total: 0,
+  addedLicensePrice: false,
+  user: {
+    firstName: '', lastName: '', email: '', phone: '', dob: '',
+    licenseNumber: '', licenseType: ''
+  },
+  survey: '',
+};
+
+/* =========================
+   HELPERS
+========================= */
+function qs(sel, root = document){ return root.querySelector(sel); }
+function qsa(sel, root = document){ return Array.from(root.querySelectorAll(sel)); }
+function money(v){ return `${v} €`; }
+function refreshHeader(){
+  qs('#sessionName').textContent = SESSION_NAME;
+  qs('#requiredType').textContent = REQUIRED_TYPE === 'competition' ? 'compétition' : 'hors compétition';
+  qs('#totalAmount').textContent = money(state.total);
+}
+function setStatus(step, txt){
+  const el = qs(`#status${step}`);
+  if(!el) return;
+  el.textContent = txt;
+  el.classList.remove('done','warn');
+  if(txt === 'terminé') el.classList.add('done');
+  if(txt === 'attention') el.classList.add('warn');
+}
+function jsonp(url, cbName, cb){
+  const script = document.createElement('script');
+  window[cbName] = function(data){
+    try { cb(data); } finally {
+      delete window[cbName];
+      script.remove();
+    }
+  };
+  script.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + cbName;
+  document.body.appendChild(script);
+}
+
+/* =========================
+   UI – construction dynamique
+========================= */
+const grid = qs('.grid');
+grid.innerHTML = `
+  <!-- Étape 1: Identité + Check DB -->
+  <section class="card" id="step1">
+    <header><h2>1) Identité</h2><span class="step-status" id="status1">en cours</span></header>
+    <div class="row">
+      <div><label for="firstName">Prénom</label><input id="firstName" autocomplete="given-name" /></div>
+      <div><label for="lastName">Nom</label><input id="lastName" autocomplete="family-name" /></div>
     </div>
-    <form id="inscriptionForm">
-        <div id="step1" class="green-box">
-            <p><strong>Étape 1 : Identité</strong></p>
-            <p>Veuillez entrer votre nom et prénom.</p>
-            <label for="firstName">Prénom :</label>
-            <input type="text" id="firstName" name="firstName" required>
-            <label for="lastName">Nom :</label>
-            <input type="text" id="lastName" name="lastName" required>
-            <button type="button" onclick="checkDatabase()">Vérifier ma présence dans la base de données</button>
+    <div class="actions"><button type="button" id="btnCheck">Vérifier dans la base</button></div>
+    <div class="hint" id="dbHint"></div>
+  </section>
+
+  <!-- Étape 2: Consentement (si non trouvé) OU Modification (si trouvé) -->
+  <section class="card" id="step2">
+    <header><h2>2) Consentement / Mise à jour</h2><span class="step-status" id="status2">en attente</span></header>
+    <div id="consentBlock" class="note" style="display:none;">
+      <div><strong>Traitement des données par HST</strong></div>
+      <div class="hint">Nous n'avons pas trouvé votre fiche. Autorisez le traitement pour poursuivre.</div>
+      <div class="actions">
+        <button type="button" id="btnConsentYes" class="secondary">J'autorise</button>
+        <button type="button" id="btnConsentNo" class="secondary">Je refuse</button>
+      </div>
+    </div>
+    <div id="foundBlock" style="margin-top:10px; display:none;">
+      <div class="hint">Adhérent trouvé. Voulez-vous modifier vos informations ?</div>
+      <div class="actions">
+        <button type="button" id="btnModifyYes" class="secondary">Modifier mes infos</button>
+        <button type="button" id="btnModifyNo" class="secondary">Continuer sans modifier</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Étape 3: Adhésion HST -->
+  <section class="card" id="step3">
+    <header><h2>3) Adhésion HST</h2><span class="step-status" id="status3">en attente</span></header>
+    <div class="note">Êtes-vous adhérent HST ?</div>
+    <div class="actions">
+      <button type="button" id="btnMemberYes" class="secondary">Oui, adhérent</button>
+      <button type="button" id="btnMemberNo" class="secondary">Non, je dois adhérer (+1 €)</button>
+    </div>
+    <div id="memberInfo" class="hint"></div>
+  </section>
+
+  <!-- Étape 4: Coordonnées -->
+  <section class="card" id="step4">
+    <header><h2>4) Coordonnées</h2><span class="step-status" id="status4">en attente</span></header>
+    <div class="row">
+      <div><label for="email">Email</label><input id="email" type="email" autocomplete="email" /></div>
+      <div><label for="phone">Téléphone</label><input id="phone" type="tel" autocomplete="tel" /></div>
+    </div>
+    <div class="row">
+      <div><label for="dob">Date de naissance</label><input id="dob" type="date" /></div>
+      <div></div>
+    </div>
+    <div class="actions"><button type="button" id="btnCoordsOk">Continuer</button></div>
+  </section>
+
+  <!-- Étape 5: Licence FFV -->
+  <section class="card" id="step5">
+    <header><h2>5) Licence FFV</h2><span class="step-status" id="status5">en attente</span></header>
+    <div class="note">Avez-vous une licence FFV ?</div>
+    <div class="actions">
+      <button type="button" id="btnHasLicenseYes" class="secondary">Oui</button>
+      <button type="button" id="btnHasLicenseNo" class="secondary">Non</button>
+    </div>
+
+    <div id="licenseDetails" style="margin-top:10px; display:none;">
+      <div class="row">
+        <div>
+          <label for="licenseNumber">Numéro de licence</label>
+          <input id="licenseNumber" />
         </div>
-
-        <div id="step2" class="green-box hidden">
-            <p><strong>Étape 2 : Statut de la base de données</strong></p>
-            <div id="foundInDB" class="hidden">
-                <p>Nous vous avons trouvé dans la base de données ! Souhaitez-vous modifier vos informations ?</p>
-                <label><input type="radio" name="modifyData" value="yes" onchange="toggleModifySection(true)"> Oui</label>
-                <label><input type="radio" name="modifyData" value="no" onchange="toggleModifySection(false)"> Non</label>
-            </div>
-            <div id="notFoundInDB" class="hidden">
-                <p>Nous ne vous avons pas trouvé dans la base de données. Acceptez-vous que vos données soient traitées informatiquement par HST ?</p>
-                <label><input type="radio" name="dataProcessing" value="yes" onchange="handleDataProcessing()"> Oui</label>
-                <label><input type="radio" name="dataProcessing" value="no" onchange="alert('Veuillez nous contacter pour une inscription papier.')"> Non</label>
-            </div>
+        <div>
+          <label for="licenseType">Type de licence</label>
+          <select id="licenseType">
+            <option value="">-- choisir --</option>
+            <option value="passeport">Passeport voile</option>
+            <option value="journaliere">Journalière</option>
+            <option value="competition">Compétition</option>
+          </select>
         </div>
+      </div>
+      <div class="actions"><button type="button" id="btnCheckLicense">Vérifier compatibilité</button></div>
+      <div id="licenseCheckMsg" class="hint"></div>
+    </div>
 
-        <div id="step3" class="green-box hidden">
-            <p><strong>Étape 3 : Modification des Informations</strong></p>
-            <p>Veuillez mettre à jour vos informations si nécessaire.</p>
-            <label for="phone">Numéro de téléphone :</label>
-            <input type="tel" id="phone" name="phone">
-            <label for="email">Adresse e-mail :</label>
-            <input type="email" id="email" name="email">
-            <label for="dob">Date de naissance :</label>
-            <input type="date" id="dob" name="dob">
-            <label for="licenseNumber">Numéro de licence :</label>
-            <input type="text" id="licenseNumber" name="licenseNumber">
-            <label for="licenseType">Type de licence :</label>
-            <input type="text" id="licenseType" name="licenseType">
-            <button type="button" onclick="checkFFVLicense()">Passer à l'étape suivante</button>
-        </div>
+    <div id="buyLicense" style="margin-top:10px; display:none;">
+      <div class="note">Acheter une licence (70 €)</div>
+      <div>
+        <label for="buyLicenseType">Type à acheter</label>
+        <select id="buyLicenseType"></select>
+        <div class="hint">Les options dépendent du type de séance.</div>
+      </div>
+      <div class="actions"><button type="button" id="btnAddLicense">Ajouter au total</button></div>
+      <div id="buyHint" class="hint"></div>
+    </div>
+  </section>
 
-        <div id="step4" class="green-box hidden">
-            <p><strong>Étape 4 : Adhésion HST</strong></p>
-            <p>Êtes-vous adhérent HST ?</p>
-            <label><input type="radio" name="hstMember" value="yes" onchange="handleHstMember()"> Oui</label>
-            <label><input type="radio" name="hstMember" value="no" onchange="handleHstMember()"> Non</label>
-        </div>
-        
-        <div id="step5" class="green-box hidden">
-            <p><strong>Étape 5 : Licence FFV</strong></p>
-            <div id="hstYes" class="hidden">
-                <p>Contactez Yann à <a href="mailto:yann.kerherve@supmaritime.fr">yann.kerherve@supmaritime.fr</a>, vous devriez déjà être dans la base de données.</p>
-            </div>
-            <div id="hstNo" class="hidden">
-                <p>Une adhésion de <strong>1 €</strong> sera ajoutée à votre total.</p>
-            </div>
-            <p>Avez-vous une licence FFV ?</p>
-            <label><input type="radio" name="ffvLicense" value="yes" onchange="handleFfvLicense()"> Oui</label>
-            <label><input type="radio" name="ffvLicense" value="no" onchange="handleFfvLicense()"> Non</label>
-        </div>
+  <!-- Étape 6: Sondage -->
+  <section class="card" id="step6">
+    <header><h2>6) Sondage</h2><span class="step-status" id="status6">en attente</span></header>
+    <label for="surveyType">Quel type de séance souhaitez-vous ?</label>
+    <input id="surveyType" placeholder="ex: entraînement spi, manœuvres, départs..." />
+    <div class="actions"><button type="button" id="btnSurveyOk">Valider</button></div>
+  </section>
 
-        <div id="step6" class="green-box hidden">
-            <p><strong>Étape 6 : Détails de la licence</strong></p>
-            <p>Veuillez entrer vos informations de licence FFV.</p>
-            <label for="licenseNumber">Numéro de licence :</label>
-            <input type="text" id="licenseNumber" name="licenseNumber">
-            <label for="licenseType">Type de licence (passeport voile, journalière, compétition) :</label>
-            <input type="text" id="licenseType" name="licenseType">
-            <button type="button" onclick="checkLicenseType()">Vérifier la licence</button>
-        </div>
-        
-        <div id="step7" class="green-box hidden">
-            <p><strong>Étape 7 : Achat de licence</strong></p>
-            <p id="licenseMismatchMessage" class="hidden">Votre licence ne correspond pas à la licence requise pour cette sortie.</p>
-            <p id="buyLicenseMessage" class="hidden">Veuillez choisir un type de licence à acheter (70 €).</p>
-            <ul>
-                <li id="passeportOption" class="hidden"><input type="radio" name="buyLicense" value="passeport"> Acheter un passeport voile (pas de compétition)</li>
-                <li><input type="radio" name="buyLicense" value="journaliere"> Acheter une licence journalière</li>
-                <li><input type="radio" name="buyLicense" value="competition"> Acheter une licence compétition</li>
-            </ul>
-            <button type="button" onclick="showSurvey()">Continuer</button>
-        </div>
+  <!-- Étape 7: Validation + Paiement -->
+  <section class="card" id="step7">
+    <header><h2>7) Validation & Paiement</h2><span class="step-status" id="status7">en attente</span></header>
+    <div class="note">Au clic sur « Finaliser », nous mettons à jour la base si nécessaire et enregistrons l'inscription à la séance. Le paiement se fera ensuite via HelloAsso.</div>
+    <div class="actions">
+      <button type="button" id="btnFinalize">Finaliser l'inscription</button>
+      <button type="button" id="btnPay" disabled>Payer sur HelloAsso</button>
+    </div>
+    <div class="hint" id="finalMsg"></div>
+  </section>
+`;
 
-        <div id="step8" class="green-box hidden">
-            <p><strong>Étape 8 : Sondage</strong></p>
-            <label for="seanceType">Quel type de séance souhaitez-vous ?</label>
-            <input type="text" id="seanceType" name="seanceType">
-            <button type="button" onclick="showFinalDetails()">Valider le sondage</button>
-        </div>
+/* =========================
+   Bind + Logique
+========================= */
+refreshHeader();
 
-        <div id="step9" class="green-box hidden">
-            <p><strong>Étape 9 : Paiement</strong></p>
-            <p>Ajout de **<span id="seanceCost">15 €</span>** au total pour le coût de la séance.</p>
-            <p>Veuillez procéder au paiement.</p>
-            <p><strong>Total à payer : <span id="totalCost">0 €</span></strong></p>
-            <button type="submit">Paiement via l'API HelloAsso</button>
-        </div>
-    </form>
+/* Étape 1 : Vérif base */
+qs('#btnCheck').addEventListener('click', () => {
+  state.user.firstName = qs('#firstName').value.trim();
+  state.user.lastName  = qs('#lastName').value.trim();
+  if(!state.user.firstName || !state.user.lastName){
+    alert('Renseigne prénom + nom'); return;
+  }
+  const url = `${APP_URL}?action=checkDatabase&firstName=${encodeURIComponent(state.user.firstName)}&lastName=${encodeURIComponent(state.user.lastName)}`;
+  jsonp(url, 'cbCheck', (res) => {
+    const hint = qs('#dbHint');
+    if(res && res.found){
+      state.foundInDb = true;
+      setStatus(1, 'terminé');
+      hint.textContent = '✅ Adhérent trouvé';
+      // Préremplir
+      state.user.email = res.userData.email || '';
+      state.user.phone = res.userData.phone || '';
+      state.user.dob = res.userData.dob || '';
+      state.user.licenseNumber = res.userData.licenseNumber || '';
+      state.user.licenseType = (res.userData.licenseType || '').toLowerCase();
+      qs('#email').value = state.user.email;
+      qs('#phone').value = state.user.phone;
+      qs('#dob').value = state.user.dob;
+      qs('#licenseNumber').value = state.user.licenseNumber;
+      qs('#licenseType').value = state.user.licenseType;
 
-    <script>
-        const appScriptUrl = 'https://script.google.com/macros/s/AKfycbzT4SLXqpiRq1JR3mF5HuKb6WqD6AnJc4J0S7S3GL0-lr2q0Uhqgxv97yxgCxeRp59b/exec';
-        const prixSeance = 15;
-        const prixAdhesion = 1;
-        const prixLicence = 70;
-        const typeSeanceRequis = 'compétition';
+      // Afficher bloc modification
+      qs('#foundBlock').style.display = 'block';
+      setStatus(2, 'en cours');
+    } else {
+      state.foundInDb = false;
+      setStatus(1, 'terminé');
+      hint.textContent = '❌ Non trouvé. Merci de gérer le consentement ci-dessous.';
+      // Activer consentement
+      setStatus(2, 'en cours');
+      qs('#consentBlock').style.display = 'block';
+    }
+  });
+});
 
-        let totalCost = 0;
+/* Étape 2 : Consentement ou Modification */
+qs('#btnConsentYes').addEventListener('click', () => {
+  state.consentGiven = true;
+  setStatus(2, 'terminé');
+  setStatus(3, 'en cours');
+});
+qs('#btnConsentNo').addEventListener('click', () => {
+  state.consentGiven = false;
+  setStatus(2, 'attention');
+  alert('Sans consentement, fin du formulaire.');
+});
+qs('#btnModifyYes').addEventListener('click', () => {
+  setStatus(2, 'terminé');
+  setStatus(3, 'en cours');
+});
+qs('#btnModifyNo').addEventListener('click', () => {
+  setStatus(2, 'terminé');
+  setStatus(3, 'en cours');
+});
 
-        function toggleSection(id, show) {
-            document.getElementById(id).classList.toggle('hidden', !show);
-        }
+/* Étape 3 : Adhésion HST */
+qs('#btnMemberYes').addEventListener('click', () => {
+  state.isMember = true;
+  qs('#memberInfo').innerHTML = '✔ Vous êtes adhérent. Si besoin, contactez <a href="mailto:yann.kerherve@supmaritime.fr">yann.kerherve@supmaritime.fr</a>.';
+  setStatus(3, 'terminé');
+  setStatus(4, 'en cours');
+});
+qs('#btnMemberNo').addEventListener('click', () => {
+  state.isMember = false;
+  state.total += PRICE_ADHESION; // +1€
+  refreshHeader();
+  qs('#memberInfo').textContent = `➕ Adhésion ajoutée (+${PRICE_ADHESION} €)`;
+  setStatus(3, 'terminé');
+  setStatus(4, 'en cours');
+});
 
-        async function checkDatabase() {
-            const firstName = document.getElementById('firstName').value;
-            const lastName = document.getElementById('lastName').value;
+/* Étape 4 : Coordonnées */
+qs('#btnCoordsOk').addEventListener('click', () => {
+  state.user.email = qs('#email').value.trim();
+  state.user.phone = qs('#phone').value.trim();
+  state.user.dob   = qs('#dob').value.trim();
+  if(!state.user.email || !state.user.phone || !state.user.dob){
+    alert('Email, téléphone et date de naissance requis.'); return;
+  }
+  setStatus(4, 'terminé');
+  setStatus(5, 'en cours');
+});
 
-            if (firstName === '' || lastName === '') {
-                alert("Veuillez entrer votre nom et prénom.");
-                return;
-            }
+/* Étape 5 : Licence FFV */
+qs('#btnHasLicenseYes').addEventListener('click', () => {
+  qs('#licenseDetails').style.display = 'block';
+  qs('#buyLicense').style.display = 'none';
+});
+qs('#btnHasLicenseNo').addEventListener('click', () => {
+  // Proposer achat selon type de séance
+  populateBuyOptions();
+  qs('#buyLicense').style.display = 'block';
+  qs('#licenseDetails').style.display = 'none';
+});
 
-            const urlWithParams = `${appScriptUrl}?action=checkDatabase&firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}`;
+function populateBuyOptions(){
+  const sel = qs('#buyLicenseType');
+  sel.innerHTML = '';
+  const addOpt = (v,t)=>{ const o=document.createElement('option'); o.value=v; o.textContent=t; sel.appendChild(o); };
+  if(REQUIRED_TYPE === 'competition'){
+    addOpt('journaliere','Licence journalière');
+    addOpt('competition','Licence compétition');
+  } else {
+    addOpt('passeport','Passeport voile');
+    addOpt('journaliere','Licence journalière');
+    addOpt('competition','Licence compétition');
+  }
+}
 
-            try {
-                const response = await fetch(urlWithParams, {
-                    method: 'GET'
-                });
-                
-                // Vérifiez si la réponse est OK (statut 200)
-                if (!response.ok) {
-                    throw new Error(`Erreur HTTP : ${response.status}`);
-                }
+qs('#btnCheckLicense').addEventListener('click', () => {
+  const type = qs('#licenseType').value.toLowerCase().trim();
+  const num  = qs('#licenseNumber').value.trim();
+  state.user.licenseType = type;
+  state.user.licenseNumber = num;
 
-                const result = await response.json();
+  if(!type || !num){ alert('Renseigne type et numéro de licence.'); return; }
 
-                toggleSection('step2', true);
-                if (result.found) {
-                    toggleSection('foundInDB', true);
-                    toggleSection('notFoundInDB', false);
-                    if (result.userData) {
-                        document.getElementById('email').value = result.userData.email || '';
-                        document.getElementById('phone').value = result.userData.phone || '';
-                        document.getElementById('dob').value = result.userData.dob || '';
-                        document.getElementById('licenseNumber').value = result.userData.licenseNumber || '';
-                        document.getElementById('licenseType').value = result.userData.licenseType || '';
-                    }
-                } else {
-                    toggleSection('foundInDB', false);
-                    toggleSection('notFoundInDB', true);
-                }
-            } catch (error) {
-                console.error("Erreur lors de la vérification de la base de données :", error);
-                alert("Erreur de connexion à la base de données. Veuillez réessayer plus tard.");
-            }
-        }
+  if(REQUIRED_TYPE === 'competition'){
+    if(type === 'competition' || type === 'journaliere'){
+      qs('#licenseCheckMsg').textContent = '✔ Licence compatible avec la séance.';
+      // ok → passer sondage
+      setStatus(5, 'terminé');
+      setStatus(6, 'en cours');
+    } else {
+      qs('#licenseCheckMsg').textContent = '❌ Licence non compatible (Passeport voile). Veuillez acheter une licence adaptée.';
+      populateBuyOptions();
+      qs('#buyLicense').style.display = 'block';
+    }
+  } else {
+    // séance non-compétition : tous les types acceptés
+    qs('#licenseCheckMsg').textContent = '✔ Licence compatible avec la séance.';
+    setStatus(5, 'terminé');
+    setStatus(6, 'en cours');
+  }
+});
 
-        function toggleModifySection(isModifying) {
-            if (isModifying) {
-                toggleSection('step3', true);
-            } else {
-                toggleSection('step3', false);
-                toggleSection('step5', true);
-            }
-        }
-        
-        function handleDataProcessing() {
-            const accepted = document.querySelector('input[name="dataProcessing"]:checked').value;
-            if (accepted === 'yes') {
-                toggleSection('step4', true);
-            }
-        }
+qs('#btnAddLicense').addEventListener('click', () => {
+  const buyType = qs('#buyLicenseType').value;
+  if(!buyType){ alert('Choisis un type de licence.'); return; }
+  if(!state.addedLicensePrice){
+    state.total += PRICE_LICENSE;
+    state.addedLicensePrice = true;
+    refreshHeader();
+  }
+  state.user.licenseType = buyType; // on retient le type choisi pour l’inscription
+  qs('#buyHint').textContent = `➕ Licence ${buyType} ajoutée (+${PRICE_LICENSE} €).`;
+  setStatus(5, 'terminé');
+  setStatus(6, 'en cours');
+});
 
-        function handleHstMember() {
-            const isHstMember = document.querySelector('input[name="hstMember"]:checked').value;
-            toggleSection('step5', true);
-            if (isHstMember === 'yes') {
-                toggleSection('hstYes', true);
-                toggleSection('hstNo', false);
-            } else {
-                totalCost += prixAdhesion;
-                document.getElementById('totalCost').textContent = totalCost + ' €';
-                toggleSection('hstYes', false);
-                toggleSection('hstNo', true);
-            }
-        }
-        
-        function checkFFVLicense() {
-            toggleSection('step5', true);
-        }
+/* Étape 6 : Sondage */
+qs('#btnSurveyOk').addEventListener('click', () => {
+  state.survey = qs('#surveyType').value.trim();
+  setStatus(6, 'terminé');
+  setStatus(7, 'en cours');
+  // Ajout du prix séance :
+  state.total += PRICE_SEANCE;
+  refreshHeader();
+});
 
-        function handleFfvLicense() {
-            const hasFfvLicense = document.querySelector('input[name="ffvLicense"]:checked').value;
-            if (hasFfvLicense === 'yes') {
-                toggleSection('step6', true);
-            } else {
-                showLicenseOptions(false);
-            }
-        }
+/* Étape 7 : Finalisation + Paiement */
+qs('#btnFinalize').addEventListener('click', () => {
+  // upsert (si consentement donné ou si trouvé en base)
+  const canWrite = state.foundInDb || state.consentGiven;
+  if(!canWrite){
+    alert("Impossible d'enregistrer sans consentement."); return;
+  }
 
-        function checkLicenseType() {
-            const userLicenseType = document.getElementById('licenseType').value.toLowerCase();
-            
-            if (userLicenseType === typeSeanceRequis) {
-                showSurvey();
-            } else {
-                totalCost += prixLicence;
-                document.getElementById('totalCost').textContent = totalCost + ' €';
-                toggleSection('step7', true);
-                toggleSection('licenseMismatchMessage', true);
-                toggleSection('buyLicenseMessage', true);
-                showLicenseOptions(false);
-            }
-        }
-        
-        function showLicenseOptions(hasFFV) {
-            toggleSection('step7', true);
-            document.getElementById('buyLicenseMessage').classList.remove('hidden');
+  const baseParams = new URLSearchParams({
+    action: 'upsertMember',
+    firstName: state.user.firstName,
+    lastName: state.user.lastName,
+    email: state.user.email,
+    phone: state.user.phone,
+    dob: state.user.dob,
+    licenseNumber: state.user.licenseNumber,
+    licenseType: state.user.licenseType
+  });
 
-            if (typeSeanceRequis === 'compétition') {
-                toggleSection('passeportOption', false);
-            } else {
-                toggleSection('passeportOption', true);
-            }
-        }
+  jsonp(`${APP_URL}?${baseParams.toString()}`, 'cbUpsert', (res1) => {
+    if(!(res1 && res1.success)){
+      qs('#finalMsg').textContent = '❌ Erreur mise à jour base.';
+      setStatus(7, 'attention');
+      return;
+    }
+    // Puis inscription à la séance
+    const regParams = new URLSearchParams({
+      action: 'registerSession',
+      firstName: state.user.firstName,
+      lastName: state.user.lastName,
+      session: SESSION_NAME,
+      requiredType: REQUIRED_TYPE,
+      total: String(state.total),
+      survey: state.survey
+    });
+    jsonp(`${APP_URL}?${regParams.toString()}`, 'cbRegister', (res2) => {
+      if(res2 && res2.success){
+        qs('#finalMsg').textContent = '✅ Inscription enregistrée. Vous pouvez procéder au paiement.';
+        setStatus(7, 'terminé');
+        qs('#btnPay').disabled = false;
+      } else {
+        qs('#finalMsg').textContent = '❌ Erreur lors de l’enregistrement de la séance.';
+        setStatus(7, 'attention');
+      }
+    });
+  });
+});
 
-        function showSurvey() {
-            toggleSection('step8', true);
-        }
-
-        function showFinalDetails() {
-            totalCost += prixSeance;
-            document.getElementById('totalCost').textContent = totalCost + ' €';
-            toggleSection('step9', true);
-        }
-    </script>
-</body>
-</html>
+// Paiement (placeholder)
+qs('#btnPay').addEventListener('click', () => {
+  alert(`Paiement HelloAsso à intégrer. Montant: ${money(state.total)}.`);
+});
+</script>
