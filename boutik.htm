@@ -211,7 +211,7 @@ grid.innerHTML = `
             <option value="">-- choisir --</option>
             <option value="passeport">Passeport voile</option>
             <option value="journaliere">Journalière</option>
-            <option value="competition">Compétition</option>
+            <option value="competition">annuelle</option>
           </select>
         </div>
       </div>
@@ -362,11 +362,11 @@ function populateBuyOptions(){
   const addOpt = (v,t)=>{ const o=document.createElement('option'); o.value=v; o.textContent=t; sel.appendChild(o); };
   if(REQUIRED_TYPE === 'competition'){
     addOpt('journaliere','Licence journalière');
-    addOpt('competition','Licence compétition');
+    addOpt('competition','Licence annuelle');
   } else {
     addOpt('passeport','Passeport voile');
     addOpt('journaliere','Licence journalière');
-    addOpt('competition','Licence compétition');
+    addOpt('competition','Licence annuelle');
   }
 }
 
