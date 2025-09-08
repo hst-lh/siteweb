@@ -16,12 +16,10 @@
 <body>
 
     <h1>Formulaire d'Inscription</h1>
-
     <div class="black-box">
         <p><strong>Nom de la sortie :</strong> Régate du jeudi soir</p>
         <p><strong>Type de licence requise :</strong> Compétition</p>
     </div>
-
     <form id="inscriptionForm">
         <div id="step1" class="green-box">
             <p><strong>Étape 1 : Identité</strong></p>
@@ -69,7 +67,7 @@
             <label><input type="radio" name="hstMember" value="yes" onchange="handleHstMember()"> Oui</label>
             <label><input type="radio" name="hstMember" value="no" onchange="handleHstMember()"> Non</label>
         </div>
-
+        
         <div id="step5" class="green-box hidden">
             <p><strong>Étape 5 : Licence FFV</strong></p>
             <div id="hstYes" class="hidden">
@@ -92,7 +90,7 @@
             <input type="text" id="licenseType" name="licenseType">
             <button type="button" onclick="checkLicenseType()">Vérifier la licence</button>
         </div>
-
+        
         <div id="step7" class="green-box hidden">
             <p><strong>Étape 7 : Achat de licence</strong></p>
             <p id="licenseMismatchMessage" class="hidden">Votre licence ne correspond pas à la licence requise pour cette sortie.</p>
@@ -122,7 +120,6 @@
     </form>
 
     <script>
-        // Remplacer l'URL ci-dessous par l'URL du déploiement de votre script Google Apps
         const appScriptUrl = 'https://script.google.com/macros/s/AKfycbzT4SLXqpiRq1JR3mF5HuKb6WqD6AnJc4J0S7S3GL0-lr2q0Uhqgxv97yxgCxeRp59b/exec';
         const prixSeance = 15;
         const prixAdhesion = 1;
@@ -139,19 +136,29 @@
             const firstName = document.getElementById('firstName').value;
             const lastName = document.getElementById('lastName').value;
 
+            if (firstName === '' || lastName === '') {
+                alert("Veuillez entrer votre nom et prénom.");
+                return;
+            }
+
             const urlWithParams = `${appScriptUrl}?action=checkDatabase&firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}`;
 
             try {
                 const response = await fetch(urlWithParams, {
                     method: 'GET'
                 });
+                
+                // Vérifiez si la réponse est OK (statut 200)
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP : ${response.status}`);
+                }
+
                 const result = await response.json();
 
                 toggleSection('step2', true);
                 if (result.found) {
                     toggleSection('foundInDB', true);
                     toggleSection('notFoundInDB', false);
-                    // Remplir les champs avec les données trouvées
                     if (result.userData) {
                         document.getElementById('email').value = result.userData.email || '';
                         document.getElementById('phone').value = result.userData.phone || '';
@@ -177,7 +184,7 @@
                 toggleSection('step5', true);
             }
         }
-
+        
         function handleDataProcessing() {
             const accepted = document.querySelector('input[name="dataProcessing"]:checked').value;
             if (accepted === 'yes') {
@@ -198,7 +205,7 @@
                 toggleSection('hstNo', true);
             }
         }
-
+        
         function checkFFVLicense() {
             toggleSection('step5', true);
         }
@@ -214,7 +221,7 @@
 
         function checkLicenseType() {
             const userLicenseType = document.getElementById('licenseType').value.toLowerCase();
-
+            
             if (userLicenseType === typeSeanceRequis) {
                 showSurvey();
             } else {
@@ -226,7 +233,7 @@
                 showLicenseOptions(false);
             }
         }
-
+        
         function showLicenseOptions(hasFFV) {
             toggleSection('step7', true);
             document.getElementById('buyLicenseMessage').classList.remove('hidden');
