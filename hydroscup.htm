@@ -1,0 +1,357 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hydro's Cup | Hydrosailing Team</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <script src="https://kit.fontawesome.com/your-code.js" crossorigin="anonymous"></script>
+
+    <style>
+        :root {
+            --primary: #00d4ff;
+            --secondary: #00ffa6;
+            --dark: #0b1c48;
+            --light: #f8fafc;
+            --glass: rgba(255, 255, 255, 0.1);
+            --shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        /* RESET & BASE */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3 { font-weight: 900; text-transform: uppercase; letter-spacing: -1px; }
+
+        /* HEADER / HERO */
+        .hero {
+            height: 100vh;
+            background: linear-gradient(rgba(11,28,72,0.6), rgba(11,28,72,0.6)), url("hc1.jpeg") center/cover fixed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            clip-path: polygon(0 0, 100% 0, 100% 95%, 0 100%);
+        }
+
+        .hero-content h1 { font-size: clamp(3rem, 8vw, 6rem); line-height: 0.9; margin-bottom: 1rem; }
+        .hero-content p { font-size: 1.2rem; font-weight: 300; letter-spacing: 4px; margin-bottom: 2rem; opacity: 0.9; }
+
+        /* BUTTONS */
+        .btn {
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: inline-block;
+            cursor: pointer;
+            border: none;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--dark);
+            box-shadow: 0 10px 30px rgba(0,212,255,0.4);
+        }
+        .btn-primary:hover { transform: translateY(-5px) scale(1.05); box-shadow: 0 15px 40px rgba(0,212,255,0.6); }
+
+        .btn-outline { border: 2px solid var(--dark); color: var(--dark); margin: 5px; }
+        .btn-outline:hover { background: var(--dark); color: white; }
+
+        /* STICKY NAV */
+        .cta-sticky {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+            background: var(--secondary);
+            color: var(--dark);
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 900;
+            text-decoration: none;
+            box-shadow: var(--shadow);
+            animation: bounce 2s infinite;
+        }
+
+        /* SECTION LAYOUT */
+        section { padding: 100px 10%; }
+        .section-title { text-align: center; margin-bottom: 60px; font-size: 2.5rem; }
+        .section-title span { color: var(--primary); }
+
+        /* INFO CARDS (Affiche & IC) */
+        .grid-info { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+        .img-container { position: relative; border-radius: 30px; overflow: hidden; box-shadow: var(--shadow); }
+        .img-container img { width: 100%; display: block; transition: 0.6s; }
+        .img-container:hover img { transform: scale(1.05); }
+
+        /* TIMELINE MODERN */
+        .timeline { position: relative; max-width: 1000px; margin: 0 auto; }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            width: 2px;
+            height: 100%;
+            background: rgba(11,28,72,0.1);
+        }
+
+        .tl-item { margin-bottom: 50px; position: relative; width: 50%; padding: 20px 40px; }
+        .tl-item:nth-child(odd) { left: 0; text-align: right; }
+        .tl-item:nth-child(even) { left: 50%; text-align: left; }
+
+        .tl-card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            transition: 0.3s;
+        }
+        .tl-card:hover { transform: translateY(-10px); border-bottom: 5px solid var(--primary); }
+        .tl-card img { width: 100%; border-radius: 15px; margin-top: 15px; }
+        .tl-date { color: var(--primary); font-weight: 700; font-size: 0.9rem; }
+
+        /* PRICING */
+        .pricing-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        .price-card {
+            background: white;
+            padding: 40px;
+            border-radius: 30px;
+            text-align: center;
+            border: 1px solid #eee;
+            transition: 0.3s;
+        }
+        .price-card.featured { background: var(--dark); color: white; transform: scale(1.05); }
+        .price-card h3 { font-size: 1.5rem; margin-bottom: 1rem; }
+        .price-card .cost { font-size: 3rem; font-weight: 900; margin-bottom: 1rem; }
+        .price-card ul { list-style: none; margin-bottom: 2rem; opacity: 0.8; }
+
+        /* INSCRIPTION (SHOP) */
+        .shop-section { background: var(--dark); color: white; border-radius: 50px 50px 0 0; }
+
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            .grid-info { grid-template-columns: 1fr; }
+            .tl-item { width: 100% !important; left: 0 !important; text-align: left !important; padding: 20px 0 20px 30px; }
+            .timeline::before { left: 0; }
+            section { padding: 60px 5%; }
+        }
+
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+        /* NAVBAR STYLE */
+.main-nav {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px 5%;
+    z-index: 1001; /* Au-dessus du bouton sticky */
+    display: flex;
+    justify-content: flex-end; /* Aligne le bouton à droite */
+}
+
+.nav-back-link {
+    color: white;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 10px 20px;
+    border-radius: 50px;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.nav-back-link:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateX(-5px); /* Petit effet de mouvement vers la gauche */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.nav-back-link .icon {
+    margin-right: 8px;
+}
+
+/* Ajustement pour mobile */
+@media (max-width: 600px) {
+    .nav-back-link {
+        font-size: 0.75rem;
+        padding: 8px 15px;
+    }
+}
+    </style>
+</head>
+<body>
+<nav class="main-nav">
+    <div class="nav-container">
+        <a href="index.htm" class="nav-back-link">
+            <span class="icon">←</span> Site HydroSailing team
+        </a>
+    </div>
+</nav>
+    <a href="#inscription" class="cta-sticky">⚡ S'INSCRIRE</a>
+
+    <header class="hero">
+        <div class="hero-content" data-aos="zoom-out">
+            <p>HYDROSAILING TEAM PRÉSENTE</p>
+            <h1>HYDRO’S CUP</h1>
+            <a href="#programme" class="btn btn-primary">DÉCOUVRIR LA RÉGATE</a>
+        </div>
+    </header>
+
+    <section>
+        <div class="grid-info">
+            <div class="img-container" data-aos="fade-right">
+                <img src="affiche.jpg" alt="Affiche Hydro's Cup">
+            </div>
+            <div class="info-text" data-aos="fade-left">
+                <h2 class="section-title" style="text-align:left">Le RDV de la <span>Marine Marchande</span></h2>
+                <p><strong>Date :</strong> 11 - 12 Avril 2026</p>
+                <p><strong>Lieu :</strong> Le Havre (SRH / SNPH)</p>
+                <br>
+                <p>Une compétition acharnée, une ambiance fraternelle et l'esprit du large. Rejoignez les équipages pour deux jours de navigation intense.</p>
+                <a href="#inscription" class="btn btn-primary" style="margin-top:20px">REJOINDRE L'AVENTURE</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="programme" style="background: #f0f4f8;">
+        <h2 class="section-title" data-aos="fade-up">Le <span>Programme</span> Officiel</h2>
+
+        <div class="timeline">
+            <div class="tl-item" data-aos="fade-right">
+                <div class="tl-card">
+                    <span class="tl-date">Vendredi 10 avril</span>
+                    <h3>Soirée des équipages</h3>
+                    <p>Accueil, présentation et dîner inclus pour lancer les festivités.</p>
+                    <img src="soireeequipage.jpeg" alt="Soirée">
+                </div>
+            </div>
+
+            <div class="tl-item" data-aos="fade-left">
+                <div class="tl-card">
+                    <span class="tl-date">Samedi 11 avril - 09:00</span>
+                    <h3>Briefing & Départ</h3>
+                    <p>Petit-déjeuner à la SRH suivi du briefing skippers obligatoire.</p>
+                    <img src="ponton.jpeg" alt="Ponton">
+                </div>
+            </div>
+
+            <div class="tl-item" data-aos="fade-right">
+                <div class="tl-card">
+                    <span class="tl-date">Samedi 11 avril - 11:30</span>
+                    <h3>Manches en mer</h3>
+                    <p>Premier signal d'avertissement à 12h45. Que le meilleur gagne !</p>
+                    <img src="depart.jpeg" alt="Départ">
+                </div>
+            </div>
+
+            <div class="tl-item" data-aos="fade-left">
+                <div class="tl-card">
+                    <span class="tl-date">Dimanche 12 avril</span>
+                    <h3>Finales & Podium</h3>
+                    <p>Dernières manches le matin et remise des prix à 17h00.</p>
+                    <img src="podium.jpeg" alt="Podium">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="grid-info">
+            <div class="info-text" data-aos="fade-right">
+                <h2 class="section-title" style="text-align:left">Documents <span>Officiels</span></h2>
+                <p>Consultez les instructions de course (IC) et l'avis de course (AC) pour préparer votre régate.</p>
+                <div style="margin-top:20px">
+                    <a href="IC.pdf" class="btn btn-outline" target="_blank">Instructions (IC)</a>
+                    <a href="AC.pdf" class="btn btn-outline" target="_blank">Avis de Course (AC)</a>
+                </div>
+            </div>
+            <div class="img-container" data-aos="fade-left">
+                <img src="ic.jpeg" alt="Instructions de course">
+            </div>
+        </div>
+    </section>
+
+    <section style="background: white;">
+        <h2 class="section-title" data-aos="fade-up">Tarifs par <span>Équipage</span></h2>
+        <div class="pricing-container">
+            <div class="price-card" data-aos="fade-up" data-aos-delay="100">
+                <h3>Étudiants</h3>
+                <div class="cost">350€</div>
+                <ul>
+                    <li>Location bateau (2 jours)</li>
+                    <li>Repas soirée équipage</li>
+                    <li>Petits-déjeuners inclus</li>
+                </ul>
+            </div>
+            <div class="price-card featured" data-aos="fade-up" data-aos-delay="200">
+                <h3>Professionnels</h3>
+                <div class="cost">500€</div>
+                <ul>
+                    <li>Location bateau (2 jours)</li>
+                    <li>Repas soirée équipage</li>
+                    <li>Petits-déjeuners inclus</li>
+                    <li>Visibilité Partenaire</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section id="inscription" class="shop-section">
+        <div class="section-title" data-aos="zoom-in">
+            <h2 style="color:white">Finaliser mon <span>Inscription</span></h2>
+        </div>
+
+        <div class="form-container">
+            <div style="text-align:center; margin-bottom:40px;">
+                <p>1. Téléchargez et complétez le dossier.</p>
+                <p>2. Renvoyez-le à : <strong>hydrosailingteam@supmaritime.fr</strong></p>
+                <br>
+                <a href="IC.pdf" class="btn btn-primary">TÉLÉCHARGER LE DOSSIER</a>
+
+            <br>
+            <br>
+            <p>3. Je peux payer directement en ligne :</p>
+            <br>
+            </div>
+            <div style="border-radius: 20px; overflow: hidden;">
+                <iframe width="100%" height="750" id="haWidget" allowtransparency="true" src="https://www.helloasso.com/associations/hydro-sailing-team/evenements/inscription-hydro-s-cup-1/widget" style="border: none;"></iframe>
+            </div>
+        </div>
+    </section>
+
+    <footer style="text-align:center; padding: 40px; background: var(--dark); color: rgba(255,255,255,0.5); font-size: 0.8rem; border-top: 1px solid rgba(255,255,255,0.1);">
+        &copy; 2026 Hydro's Cup - Hydro Sailing Team. Tous droits réservés.
+    </footer>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 1000,
+            once: true,
+            offset: 100
+        });
+    </script>
+</body>
+</html>
