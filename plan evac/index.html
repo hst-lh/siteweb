@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ENSM — Plans d'évacuation</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: sans-serif; background: #f0f2f5; display: flex; flex-direction: column; height: 100vh; }
+
+    header {
+      background: #0d3b7a;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    header img { height: 48px; object-fit: contain; }
+
+    nav {
+      background: #fff;
+      border-bottom: 2px solid #0d3b7a;
+      display: flex;
+      gap: 4px;
+      padding: 0 16px;
+    }
+    nav button {
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      padding: 12px 18px;
+      cursor: pointer;
+      font-size: 13px;
+      color: #555;
+      font-weight: 500;
+      transition: all .15s;
+    }
+    nav button:hover { color: #0d3b7a; }
+    nav button.active { color: #0d3b7a; border-bottom-color: #0d3b7a; font-weight: 700; }
+
+    iframe { flex: 1; width: 100%; border: none; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <img src="https://hydrosailingteam.com/ensm.png" alt="ENSM" />
+    <img src="https://hydrosailingteam.com/logo-hst-blanc.png" alt="HydroSailing Team" />
+  </header>
+
+  <nav>
+    <button class="active" onclick="show(this, 'DOC_extrait_RI modifié CA du 16 déc 2025_titre_2.pdf')">Règlement intérieur</button>
+    <button onclick="show(this, '__DOC_memento_prevention_risques_a_l\'usage_des_prestataires.pdf')">Mémento prestataires</button>
+    <button onclick="show(this, 'LE HAVRE Consignes d\'accueil et sécurité (002) (002).pdf')">Consignes d'accueil</button>
+    <button onclick="show(this, 'NDSP_032_procedure_evacuation_LH_20260120.pdf')">Procédure évacuation</button>
+  </nav>
+
+  <iframe id="viewer" src="DOC_extrait_RI modifié CA du 16 déc 2025_titre_2.pdf"></iframe>
+
+  <script>
+    function show(btn, file) {
+      document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('viewer').src = file;
+    }
+  </script>
+
+</body>
+</html>
